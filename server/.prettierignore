@@ -1,0 +1,11 @@
+# IDE/Editor
+.vscode
+.idea
+
+# Package Manager
+package.json
+package-lock.json
+yarn.lock
+
+# Project-related
+/lib
