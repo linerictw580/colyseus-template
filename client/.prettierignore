@@ -8,5 +8,6 @@ package-lock.json
 yarn.lock
 
 # Project-related
+/.cache
 /dist
 **/assets/**/*
