@@ -5,6 +5,7 @@ import basicAuth from 'express-basic-auth';
 /**
  * Import your Room files
  */
+import { LobbyRoom } from 'colyseus';
 import { MyRoom } from './rooms/MyRoom';
 
 export default Arena({
@@ -14,7 +15,8 @@ export default Arena({
     /**
      * Define your room handlers:
      */
-    gameServer.define('my_room', MyRoom);
+    gameServer.define('lobby', LobbyRoom);
+    gameServer.define('my_room', MyRoom).enableRealtimeListing();
   },
 
   initializeExpress: (app) => {

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import 'regenerator-runtime/runtime';
 
 import HelloWorldScene from './scenes/HelloWorldScene';
-import GameScene from './scenes/GameScene';
+import LobbyScene from './scenes/LobbyScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -20,7 +20,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [GameScene],
+  scene: [LobbyScene],
 };
 
 export default new Phaser.Game(config);
