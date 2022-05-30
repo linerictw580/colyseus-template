@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime';
 
 import HelloWorldScene from './scenes/HelloWorldScene';
 import LobbyScene from './scenes/LobbyScene';
+import LoginScene from './scenes/LoginScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -20,7 +21,12 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [LobbyScene],
+  scene: [LoginScene, LobbyScene],
+  parent: 'app-container',
+  dom: {
+    createContainer: true,
+  },
+  backgroundColor: '#e3e3e3',
 };
 
 export default new Phaser.Game(config);
