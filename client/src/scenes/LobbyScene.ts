@@ -1,9 +1,10 @@
-import { Client, RoomAvailable } from 'colyseus.js';
+import { Client, Room, RoomAvailable } from 'colyseus.js';
 import { SCENES } from '~/models/scenes.model';
 import BaseScene from './BaseScene';
 
 export default class LobbyScene extends BaseScene {
   private _client: Client;
+  private _lobby: Room;
   private _allRooms: RoomAvailable[] = [];
 
   constructor() {
@@ -13,32 +14,41 @@ export default class LobbyScene extends BaseScene {
   init(data: { username: string }) {
     super.init();
     console.log('username = ', data.username);
-    this._client = new Client('ws://localhost:2567');
+
+    const hostWithPort = window.document.location.host;
+    const host = hostWithPort.replace(/:.*/, '');
+    const port = 2567;
+    const endPoint = `ws://${host}:${port}`;
+    // console.log(endPoint);
+
+    this._client = new Client(endPoint);
+    // this._client = new Client('ws://localhost:2567');
   }
 
   preload() {
-    this.load.html('lobby', 'assets/html/lobby.html');
+    this.load.html('lobbyForm', 'assets/html/lobby.html');
     this.load.image('bg', 'assets/bg.jpg');
   }
 
-  async create() {
-    const lobby = await this._client.joinOrCreate('lobby');
+  create() {
+    this.joinLobby();
+    // const lobby = await this._client.joinOrCreate('lobby');
 
-    console.log(`room name = ${lobby.name}`);
-    console.log(`room session id = ${lobby.sessionId}`);
+    // console.log(`room name = ${lobby.name}`);
+    // console.log(`room session id = ${lobby.sessionId}`);
 
-    lobby.onMessage('rooms', (rooms) => {
-      this._allRooms = rooms;
-      console.log(`Available rooms: ${rooms}`);
-    });
+    // lobby.onMessage('rooms', (rooms) => {
+    //   this._allRooms = rooms;
+    //   console.log(`Available rooms: ${rooms}`);
+    // });
 
-    lobby.onMessage('keydown', (msg) => {
-      console.log(msg);
-    });
+    // lobby.onMessage('keydown', (msg) => {
+    //   console.log(msg);
+    // });
 
-    this.input.keyboard.on('keydown', (e) => {
-      lobby.send('keydown', e.key);
-    });
+    // this.input.keyboard.on('keydown', (e) => {
+    //   lobby.send('keydown', e.key);
+    // });
 
     // let rect = this.add.rectangle(200, 200, 200, 100, 0xffffff);
 
@@ -48,11 +58,48 @@ export default class LobbyScene extends BaseScene {
     this.createForm();
   }
 
+  joinLobby() {
+    this._client
+      .joinOrCreate('custom_lobby')
+      .then((roomInstance) => {
+        this._lobby = roomInstance;
+        console.log('Joined lobby room!');
+        console.log(`room name = ${this._lobby.name}`);
+        console.log(`room session id = ${this._lobby.sessionId}`);
+        this.onJoin();
+      })
+      .catch((e) => {
+        console.error('Error', e);
+      });
+  }
+
+  onJoin() {
+    this._lobby.onStateChange((state) => {
+      console.log('Custon lobby state', state);
+    });
+
+    this._lobby.onMessage('rooms', (rooms) => {
+      this._allRooms = rooms;
+      console.log('Received full list of rooms:', this._allRooms);
+    });
+
+    this._lobby.onLeave(() => {
+      this._allRooms = [];
+      console.log('Left lobby room!');
+    });
+  }
+
   createForm() {
-    const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-    const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
-    const form = this.add.dom(screenCenterX, screenCenterY).createFromCache('lobby');
-    // form.setPerspective(800);
+    const lobbyForm = this.add
+      .dom(this.screenCenterX, this.screenCenterY)
+      .createFromCache('lobbyForm');
+
+    lobbyForm.addListener('click');
+    lobbyForm.on('click', (e) => {
+      if (e.target.name === 'leaveButton') {
+        this.leave();
+      }
+    });
 
     const button = this.add.dom(400, 100, 'button', {}, 'Create New Room');
     button.addListener('click');
@@ -71,5 +118,10 @@ export default class LobbyScene extends BaseScene {
     // };
 
     // var element = this.add.dom(400, 300, 'div', style, 'Phaser 3');
+  }
+
+  leave() {
+    this._lobby?.leave();
+    this.scene.start(SCENES.LOGIN);
   }
 }
