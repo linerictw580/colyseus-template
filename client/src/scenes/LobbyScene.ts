@@ -96,16 +96,28 @@ export default class LobbyScene extends BaseScene {
 
     lobbyForm.addListener('click');
     lobbyForm.on('click', (e) => {
-      if (e.target.name === 'leaveButton') {
-        this.leave();
+      const elemName = e.target.name;
+      switch (elemName) {
+        case 'createButton':
+          this.createRoom();
+          break;
+
+        case 'joinButton':
+          const roomId = lobbyForm.getChildByName('roomId')['value'];
+          this.joinRoom(roomId);
+          break;
+
+        case 'leaveButton':
+          this.leave();
+          break;
       }
     });
 
-    const button = this.add.dom(400, 100, 'button', {}, 'Create New Room');
-    button.addListener('click');
-    button.on('click', () => {
-      console.log('click');
-    });
+    // const button = this.add.dom(400, 100, 'button', {}, 'Create New Room');
+    // button.addListener('click');
+    // button.on('click', () => {
+    //   console.log('click');
+    // });
 
     // let div = document.createElement('div');
     // this.add.dom(100, 100, 'div', 'width: 200px; height: 200px; border: 1px solid black;');
@@ -118,6 +130,14 @@ export default class LobbyScene extends BaseScene {
     // };
 
     // var element = this.add.dom(400, 300, 'div', style, 'Phaser 3');
+  }
+
+  createRoom() {
+    console.log(`Create room`);
+  }
+
+  joinRoom(roomId: string) {
+    console.log(`Join room: ${roomId}`);
   }
 
   leave() {
