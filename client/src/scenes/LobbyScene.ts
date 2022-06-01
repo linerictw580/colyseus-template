@@ -27,7 +27,6 @@ export default class LobbyScene extends BaseScene {
 
   preload() {
     this.load.html('lobbyForm', 'assets/html/lobby.html');
-    this.load.image('bg', 'assets/bg.jpg');
   }
 
   create() {
@@ -81,6 +80,26 @@ export default class LobbyScene extends BaseScene {
     this._lobby.onMessage('rooms', (rooms) => {
       this._allRooms = rooms;
       console.log('Received full list of rooms:', this._allRooms);
+      this.updateRoomList();
+    });
+
+    // room added
+    this._lobby.onMessage('+', ([roomId, room]) => {
+      console.log('Room added!');
+      const roomIndex = this._allRooms.findIndex((room) => room.roomId === roomId);
+      if (roomIndex !== -1) {
+        this._allRooms[roomIndex] = room;
+      } else {
+        this._allRooms.push(room);
+      }
+      this.updateRoomList();
+    });
+
+    // room removed
+    this._lobby.onMessage('-', (roomId) => {
+      console.log('Room removed!');
+      this._allRooms = this._allRooms.filter((room) => room.roomId !== roomId);
+      this.updateRoomList();
     });
 
     this._lobby.onLeave(() => {
@@ -90,25 +109,23 @@ export default class LobbyScene extends BaseScene {
   }
 
   createForm() {
-    const lobbyForm = this.add
-      .dom(this.screenCenterX, this.screenCenterY)
-      .createFromCache('lobbyForm');
+    const lobbyForm = this.add.dom(200, 200).createFromCache('lobbyForm');
 
     lobbyForm.addListener('click');
     lobbyForm.on('click', (e) => {
       const elemName = e.target.name;
       switch (elemName) {
         case 'createButton':
-          this.createRoom();
+          this.createNewRoom();
           break;
 
         case 'joinButton':
           const roomId = lobbyForm.getChildByName('roomId')['value'];
-          this.joinRoom(roomId);
+          this.joinExistingRoom(roomId);
           break;
 
         case 'leaveButton':
-          this.leave();
+          this.leaveLobby();
           break;
       }
     });
@@ -118,29 +135,32 @@ export default class LobbyScene extends BaseScene {
     // button.on('click', () => {
     //   console.log('click');
     // });
-
-    // let div = document.createElement('div');
-    // this.add.dom(100, 100, 'div', 'width: 200px; height: 200px; border: 1px solid black;');
-    // var style = {
-    //   'background-color': 'lime',
-    //   width: '220px',
-    //   height: '100px',
-    //   font: '48px Arial',
-    //   'font-weight': 'bold',
-    // };
-
-    // var element = this.add.dom(400, 300, 'div', style, 'Phaser 3');
   }
 
-  createRoom() {
+  createNewRoom() {
     console.log(`Create room`);
+    this.scene.start(SCENES.GAME, { create: true });
+    this._lobby?.leave();
   }
 
-  joinRoom(roomId: string) {
+  joinExistingRoom(roomId: string) {
     console.log(`Join room: ${roomId}`);
+    this.scene.start(SCENES.GAME, { create: false, roomId: roomId });
+    this._lobby?.leave();
   }
 
-  leave() {
+  updateRoomList() {
+    const roomList = document.getElementById('roomList');
+    if (roomList) {
+      roomList.innerHTML = this._allRooms
+        .map((room) => {
+          return `<li>${JSON.stringify(room)}</li>`;
+        })
+        .join('\n');
+    }
+  }
+
+  leaveLobby() {
     this._lobby?.leave();
     this.scene.start(SCENES.LOGIN);
   }

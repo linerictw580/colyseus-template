@@ -8,6 +8,7 @@ import basicAuth from 'express-basic-auth';
 import { LobbyRoom } from 'colyseus';
 import { MyRoom } from './rooms/MyRoom';
 import { CustomLobbyRoom } from './rooms/CustomLobbyRoom';
+import { GameRoom } from './rooms/GameRoom';
 
 export default Arena({
   getId: () => 'Your Colyseus App',
@@ -18,6 +19,7 @@ export default Arena({
      */
     gameServer.define('custom_lobby', CustomLobbyRoom);
     gameServer.define('lobby', LobbyRoom);
+    gameServer.define('game', GameRoom).enableRealtimeListing();
     gameServer.define('my_room', MyRoom).enableRealtimeListing();
   },
 

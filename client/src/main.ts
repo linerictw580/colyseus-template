@@ -4,6 +4,7 @@ import 'regenerator-runtime/runtime';
 import HelloWorldScene from './scenes/HelloWorldScene';
 import LobbyScene from './scenes/LobbyScene';
 import LoginScene from './scenes/LoginScene';
+import GameScene from './scenes/GameScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -21,7 +22,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [LoginScene, LobbyScene],
+  scene: [LoginScene, LobbyScene, GameScene],
   parent: 'app-container',
   dom: {
     createContainer: true,
