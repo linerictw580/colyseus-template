@@ -138,13 +138,11 @@ export default class LobbyScene extends BaseScene {
   }
 
   createNewRoom() {
-    console.log(`Create room`);
     this.scene.start(SCENES.GAME, { create: true });
     this._lobby?.leave();
   }
 
   joinExistingRoom(roomId: string) {
-    console.log(`Join room: ${roomId}`);
     this.scene.start(SCENES.GAME, { create: false, roomId: roomId });
     this._lobby?.leave();
   }

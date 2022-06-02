@@ -1,10 +1,13 @@
 import { Client, Room } from 'colyseus.js';
 import { SCENES } from '~/models/scenes.model';
+import { GameRoomState } from '~/states/GameRoomState';
+import { Player } from '~/states/Player';
 import BaseScene from './BaseScene';
 
 export default class GameScene extends BaseScene {
   private _client: Client;
-  private _room: Room;
+  private _room: Room<GameRoomState>;
+  private _players: { [key: string]: any };
 
   constructor() {
     super({ key: SCENES.GAME });
@@ -14,6 +17,7 @@ export default class GameScene extends BaseScene {
     super.init();
     const endPoint = 'ws://localhost:2567';
     this._client = new Client(endPoint);
+    this._players = {};
   }
 
   preload() {
@@ -43,7 +47,8 @@ export default class GameScene extends BaseScene {
     this._client
       .create('game')
       .then((roomInstance) => {
-        this._room = roomInstance;
+        this._room = roomInstance as Room<GameRoomState>;
+        console.log(`Create room: ${this._room.id}`);
         this.onJoin();
       })
       .catch((e) => {
@@ -55,7 +60,8 @@ export default class GameScene extends BaseScene {
     this._client
       .joinById(roomId)
       .then((roomInstance) => {
-        this._room = roomInstance;
+        this._room = roomInstance as Room<GameRoomState>;
+        console.log(`Join room: ${this._room.id}`);
         this.onJoin();
       })
       .catch((e) => {
@@ -63,5 +69,39 @@ export default class GameScene extends BaseScene {
       });
   }
 
-  onJoin() {}
+  onJoin() {
+    this._room.state.players.onAdd = (player, sessionId) => {
+      const rect = this.add.rectangle(player.x, player.y, 100, 100, 0xff0000);
+      player.onChange = (changes) => {
+        rect.x = player.x;
+        rect.y = player.y;
+      };
+      this._players[sessionId] = { instance: player, gameObject: rect };
+    };
+
+    this._room.state.players.onRemove = (player, sessionId) => {
+      delete this._players[sessionId];
+    };
+
+    window.addEventListener('keydown', (e) => {
+      // console.log(e.key);
+      switch (e.key) {
+        case 'ArrowUp':
+          this._room.send('move', { y: -1 });
+          break;
+
+        case 'ArrowDown':
+          this._room.send('move', { y: 1 });
+          break;
+
+        case 'ArrowLeft':
+          this._room.send('move', { x: -1 });
+          break;
+
+        case 'ArrowRight':
+          this._room.send('move', { x: 1 });
+          break;
+      }
+    });
+  }
 }
