@@ -1,4 +1,5 @@
 import { Client, Room } from 'colyseus.js';
+import { config } from '~/constant';
 import { SCENES } from '~/models/scenes.model';
 import { GameRoomState } from '~/states/GameRoomState';
 import { Player } from '~/states/Player';
@@ -15,8 +16,7 @@ export default class GameScene extends BaseScene {
 
   init(data?: any): void {
     super.init();
-    const endPoint = 'ws://localhost:2567';
-    this._client = new Client(endPoint);
+    this._client = new Client(config.webSocket.endPoint);
     this._players = {};
   }
 

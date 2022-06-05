@@ -1,4 +1,5 @@
 import { Client } from 'colyseus.js';
+import { config } from '~/constant';
 import { SCENES } from '~/models/scenes.model';
 import BaseScene from './BaseScene';
 
@@ -11,7 +12,9 @@ export default class LoginScene extends BaseScene {
 
   init() {
     super.init();
-    this._client = new Client('ws://localhost:2567');
+    console.log(process.env.NODE_ENV);
+    console.log(config.webSocket.endPoint);
+    this._client = new Client(config.webSocket.endPoint);
   }
 
   preload() {

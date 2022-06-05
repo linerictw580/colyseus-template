@@ -1,4 +1,5 @@
 import { Client, Room, RoomAvailable } from 'colyseus.js';
+import { config } from '~/constant';
 import { SCENES } from '~/models/scenes.model';
 import BaseScene from './BaseScene';
 
@@ -15,14 +16,13 @@ export default class LobbyScene extends BaseScene {
     super.init();
     console.log('username = ', data.username);
 
-    const hostWithPort = window.document.location.host;
-    const host = hostWithPort.replace(/:.*/, '');
-    const port = 2567;
-    const endPoint = `ws://${host}:${port}`;
+    // const hostWithPort = window.document.location.host;
+    // const host = hostWithPort.replace(/:.*/, '');
+    // const port = 2567;
+    // const endPoint = `ws://${host}:${port}`;
     // console.log(endPoint);
 
-    this._client = new Client(endPoint);
-    // this._client = new Client('ws://localhost:2567');
+    this._client = new Client(config.webSocket.endPoint);
   }
 
   preload() {
