@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "A typescript template project for Phaser 3 using Parceljs",
   "scripts": {
-    "start": "cross-env NODE_ENV=development parcel src/index.html -p 8000",
+    "dev": "cross-env NODE_ENV=dev parcel src/index.html -p 8000",
+    "prod": "cross-env NODE_ENV=prod parcel src/index.html -p 8000",
     "build": "parcel build src/index.html --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "heroku-postbuild": "cross-env NODE_ENV=production npx parcel build src/index.html --out-dir dist"
+    "heroku-postbuild": "cross-env NODE_ENV=prod npx parcel build src/index.html --out-dir dist"
   },
   "author": "supertommy",
   "license": "MIT",

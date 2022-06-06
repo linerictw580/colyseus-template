@@ -1,12 +1,12 @@
-const dev = {
-  webSocket: {
-    endPoint: 'ws://sknmx4.colyseus.in:2567',
+export const config = {
+  dev: {
+    webSocket: {
+      endPoint: 'ws://localhost:2567',
+    },
   },
-};
-const prod = {
-  webSocket: {
-    endPoint: 'ws://sknmx4.colyseus.in:2567',
+  prod: {
+    webSocket: {
+      endPoint: 'wss://sknmx4.colyseus.in',
+    },
   },
-};
-
-export const config = process.env.NODE_ENV === 'development' ? dev : prod;
+}[`${process.env.NODE_ENV}`];
